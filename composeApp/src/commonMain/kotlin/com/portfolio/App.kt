@@ -40,7 +40,12 @@ import portfolio.composeapp.generated.resources.compose_multiplatform
 @Preview
 fun App() {
     DeepTechTheme {
-        val sectionTitles = listOf("Welcome", "About Me", "Services", "Resume", "Speaking", "Contact")
+        val sectionTitles = listOf(
+            "Welcome",
+            "About Me",
+            "Services",
+            "Side Projects"
+        )
         val listState = rememberLazyListState()
         var activeIndex by remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
@@ -89,8 +94,7 @@ fun App() {
                                 }
                                 .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
                         )
-                        else -> Section(
-                            title = title,
+                        "Side Projects" -> Projects(
                             modifier = Modifier
                                 .onGloballyPositioned { coordinates ->
                                     sectionOffsets[index + 1] = coordinates.positionInRoot().y.toInt()
@@ -101,7 +105,7 @@ fun App() {
                 }
             }
 
-            Box(modifier = Modifier.fillMaxHeight().width(220.dp)) {
+            Box(modifier = Modifier.fillMaxHeight().width(300.dp)) {
                 SidebarNav(
                     items = sectionTitles,
                     activeIndex = activeIndex,
@@ -120,19 +124,5 @@ fun App() {
         LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
             activeIndex = listState.firstVisibleItemIndex
         }
-    }
-}
-
-@Composable
-private fun Section(title: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 64.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(painterResource(Res.drawable.compose_multiplatform), null)
-        Text(title, style = MaterialTheme.typography.headlineLarge)
-        Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
     }
 }
