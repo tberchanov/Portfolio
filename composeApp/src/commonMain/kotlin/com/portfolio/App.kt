@@ -103,6 +103,11 @@ fun App() {
                         )
                     }
                 }
+                
+                // Footer at the bottom
+                item {
+                    Footer()
+                }
             }
 
             Box(modifier = Modifier.fillMaxHeight().width(300.dp)) {
