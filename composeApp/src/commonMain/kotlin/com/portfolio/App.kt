@@ -82,6 +82,13 @@ fun App() {
                                 }
                                 .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
                         )
+                        "Services" -> Services(
+                            modifier = Modifier
+                                .onGloballyPositioned { coordinates ->
+                                    sectionOffsets[index + 1] = coordinates.positionInRoot().y.toInt()
+                                }
+                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                        )
                         else -> Section(
                             title = title,
                             modifier = Modifier
