@@ -125,9 +125,25 @@ fun App() {
             }
         }
 
-        // Update active index based on section whose top is closest to the viewport top
         LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
-            activeIndex = listState.firstVisibleItemIndex
+            val firstVisibleIndex = listState.firstVisibleItemIndex
+            val firstVisibleOffset = listState.firstVisibleItemScrollOffset
+            
+            // Get the height of the first visible item
+            val firstVisibleItemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull()
+            val firstVisibleItemHeight = firstVisibleItemInfo?.size ?: 0
+            
+            // Calculate how much of the first visible item is scrolled past
+            val scrolledPastRatio = if (firstVisibleItemHeight > 0) {
+                firstVisibleOffset.toFloat() / firstVisibleItemHeight.toFloat()
+            } else 0f
+            
+            // If more than 50% of the first visible item is scrolled past, highlight the next item
+            activeIndex = if (scrolledPastRatio > 0.5f && firstVisibleIndex < sectionTitles.size - 1) {
+                firstVisibleIndex + 1
+            } else {
+                firstVisibleIndex
+            }
         }
     }
 }
