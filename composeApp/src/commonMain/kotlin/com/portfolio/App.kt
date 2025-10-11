@@ -35,6 +35,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import portfolio.composeapp.generated.resources.Res
 import portfolio.composeapp.generated.resources.compose_multiplatform
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.lazy.LazyListState
 
 @Composable
 @Preview
@@ -74,7 +77,14 @@ fun App() {
                             }
                             .bringIntoViewRequester(bringIntoViewRequesters[0])
                     ) {
-                        Welcome(modifier = Modifier.fillMaxWidth())
+                        Welcome(
+                            modifier = Modifier.fillMaxWidth(),
+                            onScrollToAboutMe = {
+                                scope.launch {
+                                    listState.animateScrollToItem(1) // Scroll to "About Me" section
+                                }
+                            }
+                        )
                     }
                 }
 
