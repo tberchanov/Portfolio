@@ -64,8 +64,7 @@ fun App() {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = if (showSidebar) CONTENT_PADDING_DP.dp else 0.dp),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
