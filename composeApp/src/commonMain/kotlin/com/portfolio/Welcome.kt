@@ -11,11 +11,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -33,6 +36,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import portfolio.composeapp.generated.resources.Res
+import portfolio.composeapp.generated.resources.github
+import portfolio.composeapp.generated.resources.linkedin
+import androidx.compose.ui.platform.LocalUriHandler
 
 
 @Composable
@@ -40,6 +48,7 @@ fun Welcome(
     modifier: Modifier = Modifier,
     onScrollToAboutMe: () -> Unit = {}
 ) {
+    val uriHandler = LocalUriHandler.current
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -79,6 +88,41 @@ fun Welcome(
                 color = colorScheme.onBackground,
                 textAlign = TextAlign.Center,
             )
+
+            // Social media icons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.linkedin),
+                    contentDescription = "LinkedIn",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .alpha(0.8f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            uriHandler.openUri("https://www.linkedin.com/in/anatolii-berchanov/")
+                        },
+                    tint = colorScheme.primary
+                )
+                Icon(
+                    painter = painterResource(Res.drawable.github),
+                    contentDescription = "GitHub",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .alpha(0.8f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            uriHandler.openUri("https://github.com/tberchanov")
+                        },
+                    tint = colorScheme.primary
+                )
+            }
         }
         
         val infiniteTransition = rememberInfiniteTransition(label = "arrowAnimation")

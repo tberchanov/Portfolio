@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalUriHandler
 import org.jetbrains.compose.resources.painterResource
 import portfolio.composeapp.generated.resources.Res
 import portfolio.composeapp.generated.resources.external_link
@@ -32,6 +33,7 @@ import portfolio.composeapp.generated.resources.github
 fun Projects(
     modifier: Modifier = Modifier
 ) {
+    val uriHandler = LocalUriHandler.current
     Column(
         modifier = modifier
             .width(900.dp)
@@ -62,7 +64,7 @@ fun Projects(
                     linkText = "View on GitHub",
                     iconPainter = painterResource(Res.drawable.github),
                     onClick = { 
-                        UrlOpener.openUrl("https://github.com/tberchanov/StrictPro")
+                        uriHandler.openUri("https://github.com/tberchanov/StrictPro")
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -73,7 +75,7 @@ fun Projects(
                     linkText = "Visit Website",
                     iconPainter = painterResource(Res.drawable.external_link),
                     onClick = { 
-                        UrlOpener.openUrl("https://donatta.app/")
+                        uriHandler.openUri("https://donatta.app/")
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -89,7 +91,7 @@ fun Projects(
                     linkText = "View Source",
                     iconPainter = painterResource(Res.drawable.github),
                     onClick = { 
-                        UrlOpener.openUrl("https://github.com/tberchanov/Portfolio")
+                        uriHandler.openUri("https://github.com/tberchanov/Portfolio")
                     },
                     modifier = Modifier.weight(1f)
                 )
