@@ -22,7 +22,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -63,7 +62,6 @@ fun SidebarNav(
                 val isHover = hoverIndex == index
                 val isEmphasized = isActive || isHover
                 
-                // Animated values
                 val animatedLineWidth by animateDpAsState(
                     targetValue = 24.dp * (if (isEmphasized) 1.15f else 1f),
                     animationSpec = tween(durationMillis = 200),
@@ -91,7 +89,6 @@ fun SidebarNav(
                         .onPointerEvent(PointerEventType.Exit) { hoverIndex = null },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Leading accent line
                     Spacer(
                         modifier = Modifier
                             .width(animatedLineWidth)

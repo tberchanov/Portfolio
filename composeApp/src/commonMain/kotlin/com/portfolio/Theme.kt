@@ -6,11 +6,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Deep Tech palette
-val DeepCharcoal = Color(0xFF1D2024)      // background
-val TextOffWhite = Color(0xFFF5F5F5)      // on background
-val ElectricCyan = Color(0xFF00FFFF)      // primary accent
-val MutedTeal = Color(0xFF4A9090)         // secondary accent
+val DeepCharcoal = Color(0xFF1D2024)
+val TextOffWhite = Color(0xFFF5F5F5)
+val ElectricCyan = Color(0xFF00FFFF)
+val MutedTeal = Color(0xFF4A9090)
 
 private val DeepTechDarkColors: ColorScheme = darkColorScheme(
     primary = ElectricCyan,

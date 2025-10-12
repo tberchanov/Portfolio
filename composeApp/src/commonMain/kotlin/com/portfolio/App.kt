@@ -1,6 +1,5 @@
 package com.portfolio
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,18 +29,23 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import portfolio.composeapp.generated.resources.Res
-import portfolio.composeapp.generated.resources.compose_multiplatform
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.lazy.LazyListState
+
+private const val SIDEBAR_WIDTH_DP = 300
+private const val MIN_CONTENT_WIDTH_DP = 400
+private const val CONTENT_PADDING_DP = 16
+private const val SECTION_SPACING_DP = 0
+private const val SCROLL_THRESHOLD = 0.5f
+
+private val RESPONSIVE_BREAKPOINT_DP = SIDEBAR_WIDTH_DP + MIN_CONTENT_WIDTH_DP
 
 @Composable
 @Preview
 fun App() {
     DeepTechTheme {
+        val screenWidthDp = getScreenWidthDp()
+        val showSidebar = screenWidthDp >= RESPONSIVE_BREAKPOINT_DP
+        
         val sectionTitles = listOf(
             "Welcome",
             "About Me",
@@ -62,8 +65,8 @@ fun App() {
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(end = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
+                    .padding(end = if (showSidebar) CONTENT_PADDING_DP.dp else 0.dp),
+                verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Welcome full-height item
@@ -114,24 +117,25 @@ fun App() {
                     }
                 }
                 
-                // Footer at the bottom
                 item {
                     Footer()
                 }
             }
 
-            Box(modifier = Modifier.fillMaxHeight().width(300.dp)) {
-                SidebarNav(
-                    items = sectionTitles,
-                    activeIndex = activeIndex,
-                    contentPadding = PaddingValues(horizontal = 38.dp, vertical = 24.dp),
-                    onClick = { index ->
-                        activeIndex = index
-                        scope.launch {
-                            listState.animateScrollToItem(index)
+            if (showSidebar) {
+                Box(modifier = Modifier.fillMaxHeight().width(SIDEBAR_WIDTH_DP.dp)) {
+                    SidebarNav(
+                        items = sectionTitles,
+                        activeIndex = activeIndex,
+                        contentPadding = PaddingValues(horizontal = 38.dp, vertical = 24.dp),
+                        onClick = { index ->
+                            activeIndex = index
+                            scope.launch {
+                                listState.animateScrollToItem(index)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 
@@ -139,17 +143,14 @@ fun App() {
             val firstVisibleIndex = listState.firstVisibleItemIndex
             val firstVisibleOffset = listState.firstVisibleItemScrollOffset
             
-            // Get the height of the first visible item
             val firstVisibleItemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull()
             val firstVisibleItemHeight = firstVisibleItemInfo?.size ?: 0
             
-            // Calculate how much of the first visible item is scrolled past
             val scrolledPastRatio = if (firstVisibleItemHeight > 0) {
                 firstVisibleOffset.toFloat() / firstVisibleItemHeight.toFloat()
             } else 0f
             
-            // If more than 50% of the first visible item is scrolled past, highlight the next item
-            activeIndex = if (scrolledPastRatio > 0.5f && firstVisibleIndex < sectionTitles.size - 1) {
+            activeIndex = if (scrolledPastRatio > SCROLL_THRESHOLD && firstVisibleIndex < sectionTitles.size - 1) {
                 firstVisibleIndex + 1
             } else {
                 firstVisibleIndex

@@ -16,19 +16,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+private const val CONTENT_WIDTH_DP = 900
+private const val SECTION_TITLE_FONT_SIZE_SP = 36
+private const val CARD_TITLE_FONT_SIZE_SP = 20
+private const val CARD_DESCRIPTION_FONT_SIZE_SP = 16
+private const val CARD_PADDING_DP = 24
+private const val SECTION_SPACING_DP = 24
+private const val ROW_SPACING_DP = 24
+private const val CARD_SPACING_DP = 12
+private const val BORDER_WIDTH_DP = 1
+private const val BORDER_ALPHA = 0.3f
+
 @Composable
 fun Services(
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .width(900.dp)
+            .width(CONTENT_WIDTH_DP.dp)
             .padding(horizontal = 32.dp, vertical = 64.dp)
     ) {
         Text(
             text = "Services",
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 36.sp,
+                fontSize = SECTION_TITLE_FONT_SIZE_SP.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary,
@@ -36,10 +47,10 @@ fun Services(
         )
         
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
             ) {
                 ExperienceCard(
                     title = "Mobile Architecture",
@@ -54,7 +65,7 @@ fun Services(
             }
             
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
             ) {
                 ExperienceCard(
                     title = "Team Leadership",
@@ -84,26 +95,26 @@ private fun ExperienceCard(
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                width = BORDER_WIDTH_DP.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = BORDER_ALPHA),
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(24.dp)
+            .padding(CARD_PADDING_DP.dp)
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge.copy(
-                fontSize = 20.sp,
+                fontSize = CARD_TITLE_FONT_SIZE_SP.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = CARD_SPACING_DP.dp)
         )
         
         Text(
             text = description,
             style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 16.sp
+                fontSize = CARD_DESCRIPTION_FONT_SIZE_SP.sp
             ),
             color = MaterialTheme.colorScheme.onSurface,
             lineHeight = 24.sp

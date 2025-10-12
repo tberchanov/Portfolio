@@ -37,12 +37,10 @@ fun AboutMe(
         horizontalArrangement = Arrangement.spacedBy(48.dp),
         verticalAlignment = Alignment.Top
     ) {
-        // Circular portrait image with gradient ring
         Box(
             modifier = Modifier.size(250.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Gradient ring background
             Box(
                 modifier = Modifier
                     .size(250.dp)
@@ -58,7 +56,6 @@ fun AboutMe(
                     )
             )
             
-            // Portrait image
             Image(
                 painter = painterResource(Res.drawable.portrait),
                 contentDescription = "Portrait",
@@ -73,7 +70,6 @@ fun AboutMe(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Section title
             Text(
                 text = "About Me",
                 style = MaterialTheme.typography.headlineLarge.copy(
@@ -84,7 +80,7 @@ fun AboutMe(
             )
 
             DescriptionText(
-                text = "I am a Mobile Applications Architect and Team Lead with over 10 years of experience driving the design and delivery of scalable  mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
+                text = "I am a Mobile Applications Architect and Team Lead with over 10 years of experience driving the design and delivery of scalable mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
             )
             DescriptionText(
                 text = "I have successfully led initiatives to reduce crash rates, improve security score, enable cross-platform delivery, and scale applications serving thousands of users.",

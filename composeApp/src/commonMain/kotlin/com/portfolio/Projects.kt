@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,6 +28,20 @@ import portfolio.composeapp.generated.resources.Res
 import portfolio.composeapp.generated.resources.external_link
 import portfolio.composeapp.generated.resources.github
 
+private const val CONTENT_WIDTH_DP = 900
+private const val SECTION_TITLE_FONT_SIZE_SP = 36
+private const val PROJECT_TITLE_FONT_SIZE_SP = 20
+private const val PROJECT_DESCRIPTION_FONT_SIZE_SP = 16
+private const val LINK_FONT_SIZE_SP = 15
+private const val ICON_SIZE_DP = 17
+private const val CARD_PADDING_DP = 24
+private const val SECTION_SPACING_DP = 24
+private const val ROW_SPACING_DP = 24
+private const val CARD_SPACING_DP = 16
+private const val ICON_TEXT_SPACING_DP = 8
+private const val BORDER_WIDTH_DP = 1
+private const val BORDER_ALPHA = 0.3f
+
 @Composable
 fun Projects(
     modifier: Modifier = Modifier
@@ -36,27 +49,24 @@ fun Projects(
     val uriHandler = LocalUriHandler.current
     Column(
         modifier = modifier
-            .width(900.dp)
+            .width(CONTENT_WIDTH_DP.dp)
             .padding(horizontal = 32.dp, vertical = 64.dp)
     ) {
-        // Section title
         Text(
             text = "Side Projects",
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 36.sp,
+                fontSize = SECTION_TITLE_FONT_SIZE_SP.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 32.dp)
         )
         
-        // Project cards in horizontal layout
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp)
         ) {
-            // First row - StrictPro and Donatta
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
             ) {
                 ProjectCard(
                     title = "StrictPro",
@@ -81,9 +91,8 @@ fun Projects(
                 )
             }
             
-            // Second row - Portfolio website
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
             ) {
                 ProjectCard(
                     title = "Portfolio Website",
@@ -96,7 +105,6 @@ fun Projects(
                     modifier = Modifier.weight(1f)
                 )
                 
-                // Empty space to maintain layout balance
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
@@ -119,34 +127,31 @@ private fun ProjectCard(
                 shape = RoundedCornerShape(8.dp)
             )
             .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                width = BORDER_WIDTH_DP.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = BORDER_ALPHA),
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(CARD_PADDING_DP.dp),
+        verticalArrangement = Arrangement.spacedBy(CARD_SPACING_DP.dp)
     ) {
-        // Project title
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge.copy(
-                fontSize = 20.sp,
+                fontSize = PROJECT_TITLE_FONT_SIZE_SP.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary
         )
         
-        // Project description
         Text(
             text = description,
             style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 16.sp
+                fontSize = PROJECT_DESCRIPTION_FONT_SIZE_SP.sp
             ),
             color = MaterialTheme.colorScheme.onSurface,
             lineHeight = 24.sp
         )
         
-        // Clickable link with icon
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable { onClick() }
@@ -155,16 +160,16 @@ private fun ProjectCard(
                 painter = iconPainter,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                modifier = Modifier.size(17.dp)
+                modifier = Modifier.size(ICON_SIZE_DP.dp)
             )
             Text(
                 text = linkText,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 15.sp,
+                    fontSize = LINK_FONT_SIZE_SP.sp,
                     fontWeight = FontWeight.Medium
                 ),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = ICON_TEXT_SPACING_DP.dp)
             )
         }
     }

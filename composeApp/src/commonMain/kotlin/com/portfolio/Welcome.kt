@@ -42,6 +42,21 @@ import portfolio.composeapp.generated.resources.github
 import portfolio.composeapp.generated.resources.linkedin
 import androidx.compose.ui.platform.LocalUriHandler
 
+private const val NAME_FONT_SIZE_SP = 85
+private const val TITLE_FONT_SIZE_SP = 30
+private const val ICON_SIZE_DP = 24
+private const val ICON_ALPHA = 0.8f
+private const val ICON_SPACING_DP = 24
+private const val ARROW_SIZE_DP = 24
+private const val ARROW_STROKE_WIDTH_DP = 3
+private const val BOUNCE_OFFSET_DP = -9.2f
+private const val ANIMATION_DURATION_MS = 1260
+private const val ANIMATION_DELAY_MS = 630
+private const val ARROW_CONTAINER_SIZE_DP = 60
+private const val ARROW_CONTAINER_ALPHA = 0.8f
+private const val ARROW_BOTTOM_PADDING_DP = 24
+private const val ARROW_SIZE_RATIO = 0.3f
+private const val ARROW_HEIGHT_RATIO = 0.5f
 
 @Composable
 fun Welcome(
@@ -67,7 +82,7 @@ fun Welcome(
             Text(
                 text = "Anatolii Berchanov",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 85.sp,
+                    fontSize = NAME_FONT_SIZE_SP.sp,
                     fontWeight = FontWeight.Bold,
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -79,27 +94,25 @@ fun Welcome(
                 textAlign = TextAlign.Center,
             )
 
-            // Title text
             Text(
                 text = "Mobile Applications Architect",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = 30.sp,
+                    fontSize = TITLE_FONT_SIZE_SP.sp,
                 ),
                 color = colorScheme.onBackground,
                 textAlign = TextAlign.Center,
             )
 
-            // Social media icons
             Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(ICON_SPACING_DP.dp),
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.linkedin),
                     contentDescription = "LinkedIn",
                     modifier = Modifier
-                        .size(24.dp)
-                        .alpha(0.8f)
+                        .size(ICON_SIZE_DP.dp)
+                        .alpha(ICON_ALPHA)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -112,8 +125,8 @@ fun Welcome(
                     painter = painterResource(Res.drawable.github),
                     contentDescription = "GitHub",
                     modifier = Modifier
-                        .size(24.dp)
-                        .alpha(0.8f)
+                        .size(ICON_SIZE_DP.dp)
+                        .alpha(ICON_ALPHA)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -128,9 +141,9 @@ fun Welcome(
         val infiniteTransition = rememberInfiniteTransition(label = "arrowAnimation")
         val bounceOffset by infiniteTransition.animateFloat(
             initialValue = 0f,
-            targetValue = -9.2f, // 8 * 1.15 = 9.2 (15% increase)
+            targetValue = BOUNCE_OFFSET_DP,
             animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1260, delayMillis = 630), // 10% faster
+                animation = tween(durationMillis = ANIMATION_DURATION_MS, delayMillis = ANIMATION_DELAY_MS),
                 repeatMode = RepeatMode.Reverse
             ),
             label = "bounceOffset"
@@ -138,10 +151,10 @@ fun Welcome(
         
         Box(
             modifier = Modifier
-                .alpha(0.8f)
+                .alpha(ARROW_CONTAINER_ALPHA)
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp) // Moved lower (reduced from 48dp to 24dp)
-                .size(60.dp)
+                .padding(bottom = ARROW_BOTTOM_PADDING_DP.dp)
+                .size(ARROW_CONTAINER_SIZE_DP.dp)
                 .offset(y = bounceOffset.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -150,11 +163,11 @@ fun Welcome(
             contentAlignment = Alignment.Center
         ) {
             Canvas(
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(ARROW_SIZE_DP.dp)
             ) {
                 drawDownArrow(
                     color = colorScheme.primary,
-                    strokeWidth = 3.dp.toPx()
+                    strokeWidth = ARROW_STROKE_WIDTH_DP.dp.toPx()
                 )
             }
         }
@@ -168,12 +181,11 @@ private fun DrawScope.drawDownArrow(
     val path = Path().apply {
         val centerX = size.width / 2f
         val centerY = size.height / 2f
-        val arrowSize = size.width * 0.3f
+        val arrowSize = size.width * ARROW_SIZE_RATIO
         
-        // Draw downward arrow (V shape)
-        moveTo(centerX - arrowSize, centerY - arrowSize * 0.5f)
-        lineTo(centerX, centerY + arrowSize * 0.5f)
-        lineTo(centerX + arrowSize, centerY - arrowSize * 0.5f)
+        moveTo(centerX - arrowSize, centerY - arrowSize * ARROW_HEIGHT_RATIO)
+        lineTo(centerX, centerY + arrowSize * ARROW_HEIGHT_RATIO)
+        lineTo(centerX + arrowSize, centerY - arrowSize * ARROW_HEIGHT_RATIO)
     }
     
     drawPath(
