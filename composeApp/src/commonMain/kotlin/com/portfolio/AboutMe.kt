@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,6 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import portfolio.composeapp.generated.resources.Res
 import portfolio.composeapp.generated.resources.portrait
@@ -79,8 +84,10 @@ fun AboutMe(
                 color = MaterialTheme.colorScheme.primary
             )
 
+            val yearsOfExperience = remember { getYearsOfExperience() }
+
             DescriptionText(
-                text = "I am a Mobile Applications Architect and Team Lead with over 10 years of experience driving the design and delivery of scalable mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
+                text = "I am a Mobile Applications Architect and Team Lead with $yearsOfExperience years of experience driving the design and delivery of scalable mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
             )
             DescriptionText(
                 text = "I have successfully led initiatives to reduce crash rates, improve security score, enable cross-platform delivery, and scale applications serving thousands of users.",
@@ -103,4 +110,22 @@ private fun DescriptionText(text: String, modifier: Modifier = Modifier) {
         color = MaterialTheme.colorScheme.onBackground,
         lineHeight = 24.sp
     )
+}
+
+private val careerStartDate = LocalDate(2017, 7, 1)
+
+private fun getYearsOfExperience(): Int {
+    val today = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+
+    var years = today.year - careerStartDate.year
+    if (
+        today.monthNumber < careerStartDate.monthNumber ||
+        (today.monthNumber == careerStartDate.monthNumber && today.dayOfMonth < careerStartDate.dayOfMonth)
+    ) {
+        years -= 1
+    }
+
+    return years.coerceAtLeast(0)
 }
