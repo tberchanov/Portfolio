@@ -3,12 +3,10 @@ package com.portfolio
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,11 +31,18 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private const val SIDEBAR_WIDTH_DP = 300
 private const val MIN_CONTENT_WIDTH_DP = 400
-private const val CONTENT_PADDING_DP = 16
 private const val SECTION_SPACING_DP = 0
 private const val SCROLL_THRESHOLD = 0.5f
 
 private val RESPONSIVE_BREAKPOINT_DP = SIDEBAR_WIDTH_DP + MIN_CONTENT_WIDTH_DP
+
+sealed class Section(val name: String) {
+    data object Welcome : Section("Welcome")
+    data object AboutMe : Section("About Me")
+    data object Services : Section("Services")
+    data object SideProjects : Section("Side Projects")
+    data object Contact : Section("Contact")
+}
 
 @Composable
 @Preview
@@ -45,18 +50,19 @@ fun App() {
     DeepTechTheme {
         val screenWidthDp = getScreenWidthDp()
         val showSidebar = screenWidthDp >= RESPONSIVE_BREAKPOINT_DP
-        
-        val sectionTitles = listOf(
-            "Welcome",
-            "About Me",
-            "Services",
-            "Side Projects"
+
+        val sections = listOf(
+            Section.Welcome,
+            Section.AboutMe,
+            Section.Services,
+            Section.SideProjects,
+            Section.Contact,
         )
         val listState = rememberLazyListState()
         var activeIndex by remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
-        val bringIntoViewRequesters = remember { sectionTitles.map { BringIntoViewRequester() } }
-        val sectionOffsets = remember { MutableList(sectionTitles.size) { 0 } }
+        val bringIntoViewRequesters = remember { sections.map { BringIntoViewRequester() } }
+        val sectionOffsets = remember { MutableList(sections.size) { 0 } }
 
         Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
 
@@ -90,32 +96,49 @@ fun App() {
                     }
                 }
 
-                itemsIndexed(sectionTitles.drop(1)) { index, title ->
-                    when (title) {
-                        "About Me" -> AboutMe(
+                itemsIndexed(sections.drop(1)) { index, section ->
+                    when (section) {
+                        Section.Welcome -> {
+                            // none, as it is already added as a separate item.
+                        }
+                        Section.AboutMe -> AboutMe(
                             modifier = Modifier
                                 .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] = coordinates.positionInRoot().y.toInt()
+                                    sectionOffsets[index + 1] =
+                                        coordinates.positionInRoot().y.toInt()
                                 }
                                 .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
                         )
-                        "Services" -> Services(
+
+                        Section.Services -> Services(
                             modifier = Modifier
                                 .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] = coordinates.positionInRoot().y.toInt()
+                                    sectionOffsets[index + 1] =
+                                        coordinates.positionInRoot().y.toInt()
                                 }
                                 .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
                         )
-                        "Side Projects" -> Projects(
+
+                        Section.SideProjects -> Projects(
                             modifier = Modifier
                                 .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] = coordinates.positionInRoot().y.toInt()
+                                    sectionOffsets[index + 1] =
+                                        coordinates.positionInRoot().y.toInt()
+                                }
+                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                        )
+
+                        Section.Contact -> ContactMe(
+                            modifier = Modifier
+                                .onGloballyPositioned { coordinates ->
+                                    sectionOffsets[index + 1] =
+                                        coordinates.positionInRoot().y.toInt()
                                 }
                                 .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
                         )
                     }
                 }
-                
+
                 item {
                     Footer()
                 }
@@ -124,7 +147,7 @@ fun App() {
             if (showSidebar) {
                 Box(modifier = Modifier.fillMaxHeight().width(SIDEBAR_WIDTH_DP.dp)) {
                     SidebarNav(
-                        items = sectionTitles,
+                        items = sections.map { it.name },
                         activeIndex = activeIndex,
                         contentPadding = PaddingValues(horizontal = 38.dp, vertical = 24.dp),
                         onClick = { index ->
@@ -141,19 +164,20 @@ fun App() {
         LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
             val firstVisibleIndex = listState.firstVisibleItemIndex
             val firstVisibleOffset = listState.firstVisibleItemScrollOffset
-            
+
             val firstVisibleItemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull()
             val firstVisibleItemHeight = firstVisibleItemInfo?.size ?: 0
-            
+
             val scrolledPastRatio = if (firstVisibleItemHeight > 0) {
                 firstVisibleOffset.toFloat() / firstVisibleItemHeight.toFloat()
             } else 0f
-            
-            activeIndex = if (scrolledPastRatio > SCROLL_THRESHOLD && firstVisibleIndex < sectionTitles.size - 1) {
-                firstVisibleIndex + 1
-            } else {
-                firstVisibleIndex
-            }
+
+            activeIndex =
+                if (scrolledPastRatio > SCROLL_THRESHOLD && firstVisibleIndex < sections.size - 1) {
+                    firstVisibleIndex + 1
+                } else {
+                    firstVisibleIndex
+                }
         }
     }
 }
