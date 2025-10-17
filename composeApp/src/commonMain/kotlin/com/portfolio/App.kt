@@ -101,41 +101,49 @@ fun App() {
                         Section.Welcome -> {
                             // none, as it is already added as a separate item.
                         }
-                        Section.AboutMe -> AboutMe(
-                            modifier = Modifier
-                                .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] =
-                                        coordinates.positionInRoot().y.toInt()
-                                }
-                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
-                        )
+                        Section.AboutMe -> AnimatedSection {
+                            AboutMe(
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates ->
+                                        sectionOffsets[index + 1] =
+                                            coordinates.positionInRoot().y.toInt()
+                                    }
+                                    .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                            )
+                        }
 
-                        Section.Services -> Services(
-                            modifier = Modifier
-                                .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] =
-                                        coordinates.positionInRoot().y.toInt()
-                                }
-                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
-                        )
+                        Section.Services -> AnimatedSection {
+                            Services(
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates ->
+                                        sectionOffsets[index + 1] =
+                                            coordinates.positionInRoot().y.toInt()
+                                    }
+                                    .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                            )
+                        }
 
-                        Section.SideProjects -> Projects(
-                            modifier = Modifier
-                                .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] =
-                                        coordinates.positionInRoot().y.toInt()
-                                }
-                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
-                        )
+                        Section.SideProjects -> AnimatedSection {
+                            Projects(
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates ->
+                                        sectionOffsets[index + 1] =
+                                            coordinates.positionInRoot().y.toInt()
+                                    }
+                                    .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                            )
+                        }
 
-                        Section.Contact -> ContactMe(
-                            modifier = Modifier
-                                .onGloballyPositioned { coordinates ->
-                                    sectionOffsets[index + 1] =
-                                        coordinates.positionInRoot().y.toInt()
-                                }
-                                .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
-                        )
+                        Section.Contact -> AnimatedSection {
+                            ContactMe(
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates ->
+                                        sectionOffsets[index + 1] =
+                                            coordinates.positionInRoot().y.toInt()
+                                    }
+                                    .bringIntoViewRequester(bringIntoViewRequesters[index + 1])
+                            )
+                        }
                     }
                 }
 
