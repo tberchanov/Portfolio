@@ -78,20 +78,32 @@ fun Welcome(
                 .fillMaxSize()
                 .alpha(0.7f)
         )
+
+        val isMobileScreen = isMobile()
+        val fontScale = getResponsiveFontScale()
+        val horizontalPadding = getResponsiveHorizontalPadding()
+        val verticalPadding = getResponsiveVerticalPadding()
         
-        // Main content centered
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(vertical = 64.dp)
+                .padding(
+                    horizontal = horizontalPadding,
+                    vertical = verticalPadding
+                )
         ) {
             Text(
                 text = "Anatolii Berchanov",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = NAME_FONT_SIZE_SP.sp,
+                    fontSize = (NAME_FONT_SIZE_SP * fontScale).sp,
                     fontWeight = FontWeight.Bold,
+                    lineHeight = if (isMobileScreen) {
+                        (NAME_FONT_SIZE_SP * fontScale * 1.2).sp
+                    } else {
+                        (NAME_FONT_SIZE_SP * fontScale * 1.0).sp
+                    },
                     brush = Brush.horizontalGradient(
                         colors = listOf(
                             colorScheme.primary,
@@ -100,26 +112,33 @@ fun Welcome(
                     )
                 ),
                 textAlign = TextAlign.Center,
+                maxLines = 2,
             )
 
             Text(
                 text = "Mobile Applications Architect",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = TITLE_FONT_SIZE_SP.sp,
+                    fontSize = (TITLE_FONT_SIZE_SP * fontScale).sp,
                 ),
                 color = colorScheme.onBackground,
                 textAlign = TextAlign.Center,
             )
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(ICON_SPACING_DP.dp),
-                modifier = Modifier.padding(top = 8.dp)
+                horizontalArrangement = Arrangement.spacedBy(
+                    if (isMobileScreen) 20.dp else ICON_SPACING_DP.dp
+                ),
+                modifier = Modifier.padding(
+                    top = if (isMobileScreen) 16.dp else 8.dp,
+                    bottom = if (isMobileScreen) 8.dp else 0.dp
+                )
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.linkedin),
-                    contentDescription = "LinkedIn",
+                val iconSize = if (isMobileScreen) 28.dp else getResponsiveIconSize()
+                val touchTargetSize = if (isMobileScreen) 48.dp else iconSize
+
+                Box(
                     modifier = Modifier
-                        .size(ICON_SIZE_DP.dp)
+                        .size(touchTargetSize)
                         .alpha(ICON_ALPHA)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -127,13 +146,19 @@ fun Welcome(
                         ) {
                             uriHandler.openUri("https://www.linkedin.com/in/anatolii-berchanov/")
                         },
-                    tint = colorScheme.primary
-                )
-                Icon(
-                    painter = painterResource(Res.drawable.github),
-                    contentDescription = "GitHub",
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.linkedin),
+                        contentDescription = "LinkedIn",
+                        modifier = Modifier.size(iconSize),
+                        tint = colorScheme.primary
+                    )
+                }
+                
+                Box(
                     modifier = Modifier
-                        .size(ICON_SIZE_DP.dp)
+                        .size(touchTargetSize)
                         .alpha(ICON_ALPHA)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -141,8 +166,15 @@ fun Welcome(
                         ) {
                             uriHandler.openUri("https://github.com/tberchanov")
                         },
-                    tint = colorScheme.primary
-                )
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.github),
+                        contentDescription = "GitHub",
+                        modifier = Modifier.size(iconSize),
+                        tint = colorScheme.primary
+                    )
+                }
             }
         }
         
@@ -157,12 +189,23 @@ fun Welcome(
             label = "bounceOffset"
         )
         
+        val arrowBottomPadding = if (isMobileScreen) 24.dp else ARROW_BOTTOM_PADDING_DP.dp
+        val arrowContainerSize = maxOf(
+            (ARROW_CONTAINER_SIZE_DP * fontScale).dp,
+            48.dp
+        )
+        val arrowSize = maxOf(
+            (ARROW_SIZE_DP * fontScale).dp,
+            20.dp
+        )
+        val arrowStrokeWidth = (ARROW_STROKE_WIDTH_DP * fontScale).dp
+        
         Box(
             modifier = Modifier
                 .alpha(ARROW_CONTAINER_ALPHA)
                 .align(Alignment.BottomCenter)
-                .padding(bottom = ARROW_BOTTOM_PADDING_DP.dp)
-                .size(ARROW_CONTAINER_SIZE_DP.dp)
+                .padding(bottom = arrowBottomPadding)
+                .size(arrowContainerSize)
                 .offset(y = bounceOffset.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -171,11 +214,11 @@ fun Welcome(
             contentAlignment = Alignment.Center
         ) {
             Canvas(
-                modifier = Modifier.size(ARROW_SIZE_DP.dp)
+                modifier = Modifier.size(arrowSize)
             ) {
                 drawDownArrow(
                     color = colorScheme.primary,
-                    strokeWidth = ARROW_STROKE_WIDTH_DP.dp.toPx()
+                    strokeWidth = arrowStrokeWidth.toPx()
                 )
             }
         }

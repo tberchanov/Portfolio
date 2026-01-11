@@ -65,8 +65,6 @@ fun App() {
         val sectionOffsets = remember { MutableList(sections.size) { 0 } }
 
         Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-
-            // Content
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -74,7 +72,6 @@ fun App() {
                 verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Welcome full-height item
                 item {
                     Box(
                         modifier = Modifier
@@ -89,7 +86,7 @@ fun App() {
                             modifier = Modifier.fillMaxWidth(),
                             onScrollToAboutMe = {
                                 scope.launch {
-                                    listState.animateScrollToItem(1) // Scroll to "About Me" section
+                                    listState.animateScrollToItem(1)
                                 }
                             }
                         )
@@ -99,7 +96,7 @@ fun App() {
                 itemsIndexed(sections.drop(1)) { index, section ->
                     when (section) {
                         Section.Welcome -> {
-                            // none, as it is already added as a separate item.
+                            // Welcome is already added as a separate item
                         }
                         Section.AboutMe -> AnimatedSection {
                             AboutMe(
@@ -169,23 +166,31 @@ fun App() {
             }
         }
 
-        LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
+        LaunchedEffect(listState.layoutInfo) {
+            val layoutInfo = listState.layoutInfo
             val firstVisibleIndex = listState.firstVisibleItemIndex
             val firstVisibleOffset = listState.firstVisibleItemScrollOffset
+            val contactItemIndex = sections.size - 1
+            val isFooterVisible = layoutInfo.visibleItemsInfo.any { it.index >= sections.size }
 
-            val firstVisibleItemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull()
-            val firstVisibleItemHeight = firstVisibleItemInfo?.size ?: 0
+            activeIndex = when {
+                isFooterVisible -> sections.size - 1
+                firstVisibleIndex == contactItemIndex -> contactItemIndex
+                firstVisibleIndex >= sections.size -> sections.size - 1
+                else -> {
+                    val firstVisibleItemInfo = layoutInfo.visibleItemsInfo.firstOrNull()
+                    val firstVisibleItemHeight = firstVisibleItemInfo?.size ?: 0
+                    val scrolledPastRatio = if (firstVisibleItemHeight > 0) {
+                        firstVisibleOffset.toFloat() / firstVisibleItemHeight.toFloat()
+                    } else 0f
 
-            val scrolledPastRatio = if (firstVisibleItemHeight > 0) {
-                firstVisibleOffset.toFloat() / firstVisibleItemHeight.toFloat()
-            } else 0f
-
-            activeIndex =
-                if (scrolledPastRatio > SCROLL_THRESHOLD && firstVisibleIndex < sections.size - 1) {
-                    firstVisibleIndex + 1
-                } else {
-                    firstVisibleIndex
+                    if (scrolledPastRatio > SCROLL_THRESHOLD && firstVisibleIndex < sections.size - 1) {
+                        firstVisibleIndex + 1
+                    } else {
+                        firstVisibleIndex
+                    }
                 }
+            }.coerceIn(0, sections.size - 1)
         }
     }
 }

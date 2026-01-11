@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,11 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -48,94 +49,184 @@ private const val PROJECTS_QUANTITY = 10
 fun AboutMe(
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .width(900.dp)
-            .padding(horizontal = 32.dp, vertical = 64.dp),
-        horizontalArrangement = Arrangement.spacedBy(48.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Box(
-            modifier = Modifier.size(250.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(250.dp)
-                    .clip(CircleShape)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colorStops = arrayOf(
-                                0.87f to MaterialTheme.colorScheme.primary,
-                                1.0f to Color.Transparent
-                            ),
-                            radius = 250f,
-                        )
-                    )
-            )
-            
-            Image(
-                painter = painterResource(Res.drawable.portrait),
-                contentDescription = "Portrait",
-                modifier = Modifier
-                    .size(220.dp)
-                    .clip(CircleShape)
-                    .alpha(0.95f)
-            )
-        }
+    val isMobileScreen = isMobile()
+    val contentWidth = getResponsiveContentWidth()
+    val horizontalPadding = getResponsiveHorizontalPadding()
+    val verticalPadding = getResponsiveVerticalPadding()
 
+    if (isMobileScreen) {
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = "About Me",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = horizontalPadding,
+                    vertical = verticalPadding
                 ),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            val yearsOfExperience = remember { getYearsOfExperience() }
-
-            DescriptionText(
-                text = "I am a Mobile Applications Architect and Team Lead driving the design and delivery of scalable mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
-            )
-            DescriptionText(
-                text = "I have successfully led initiatives to reduce crash rates, improve security score, enable cross-platform delivery, and scale applications serving thousands of users.",
-            )
-            DescriptionText(
-                text = "Beyond hands-on development, I provide technical leadership by mentoring engineers, establishing best practices, leading teams organizing their work to ensure consistent delivery.",
-            )
-
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            PortraitSection()
+            Spacer(modifier = Modifier.height(24.dp))
+            TextContentSection(includeStats = true)
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .widthIn(max = contentWidth)
+                .fillMaxWidth()
+                .padding(
+                    horizontal = horizontalPadding,
+                    vertical = verticalPadding
+                )
+        ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(48.dp)
+                horizontalArrangement = Arrangement.spacedBy(48.dp),
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                StatItem(
-                    value = "$yearsOfExperience",
-                    label = "Years of Experience"
+                PortraitSection()
+                TextContentSection(
+                    modifier = Modifier.weight(1f),
+                    includeStats = false
                 )
-                StatItem(
-                    value = "$PROJECTS_QUANTITY",
-                    label = "Projects Delivered"
-                )
-                Spacer(modifier = Modifier.weight(1f))
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            StatsSection(
+                fontScale = getResponsiveFontScale(),
+                isMobile = false
+            )
         }
     }
 }
 
 @Composable
-private fun DescriptionText(text: String, modifier: Modifier = Modifier) {
+private fun PortraitSection() {
+    val portraitSize = getResponsivePortraitSize()
+    val imageSize = (portraitSize.value * 0.88f).dp
+    
+    Box(
+        modifier = Modifier.size(portraitSize),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(portraitSize)
+                .clip(CircleShape)
+                .background(
+                    brush = Brush.radialGradient(
+                        colorStops = arrayOf(
+                            0.87f to MaterialTheme.colorScheme.primary,
+                            1.0f to Color.Transparent
+                        ),
+                        radius = portraitSize.value,
+                    )
+                )
+        )
+        
+        Image(
+            painter = painterResource(Res.drawable.portrait),
+            contentDescription = "Portrait",
+            modifier = Modifier
+                .size(imageSize)
+                .clip(CircleShape)
+                .alpha(0.95f)
+        )
+    }
+}
+
+@Composable
+private fun TextContentSection(
+    modifier: Modifier = Modifier,
+    includeStats: Boolean = true
+) {
+    val fontScale = getResponsiveFontScale()
+    val isMobileScreen = isMobile()
+    
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "About Me",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = (36 * fontScale).sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        DescriptionText(
+            text = "I am a Mobile Applications Architect and Team Lead driving the design and delivery of scalable mobile solutions. My expertise spans Android, Kotlin, and cross-platform technologies such as Kotlin Multiplatform, Flutter, React Native.",
+            fontScale = fontScale,
+            isMobile = isMobileScreen
+        )
+        DescriptionText(
+            text = "I have successfully led initiatives to reduce crash rates, improve security score, enable cross-platform delivery, and scale applications serving thousands of users.",
+            fontScale = fontScale,
+            isMobile = isMobileScreen
+        )
+        DescriptionText(
+            text = "Beyond hands-on development, I provide technical leadership by mentoring engineers, establishing best practices, leading teams organizing their work to ensure consistent delivery.",
+            fontScale = fontScale,
+            isMobile = isMobileScreen
+        )
+
+        if (includeStats) {
+            StatsSection(
+                fontScale = fontScale,
+                isMobile = isMobileScreen
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatsSection(
+    fontScale: Float,
+    isMobile: Boolean
+) {
+    val yearsOfExperience = remember { getYearsOfExperience() }
+    val statsSpacing = if (isMobile) 24.dp else 48.dp
+    
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(statsSpacing)
+        ) {
+            StatItem(
+                value = "$yearsOfExperience",
+                label = "Years of Experience",
+                fontScale = fontScale,
+                isMobile = isMobile
+            )
+            StatItem(
+                value = "$PROJECTS_QUANTITY",
+                label = "Projects Delivered",
+                fontScale = fontScale,
+                isMobile = isMobile
+            )
+        }
+    }
+}
+
+@Composable
+private fun DescriptionText(
+    text: String,
+    modifier: Modifier = Modifier,
+    fontScale: Float,
+    isMobile: Boolean
+) {
     Text(
         text = text,
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         style = MaterialTheme.typography.bodyLarge.copy(
-            fontSize = 18.sp
+            fontSize = (18 * fontScale).sp
         ),
         color = MaterialTheme.colorScheme.onBackground,
-        lineHeight = 24.sp
+        lineHeight = if (isMobile) 20.sp else 24.sp,
+        softWrap = true,
+        overflow = TextOverflow.Visible
     )
 }
 
@@ -161,38 +252,57 @@ private fun getYearsOfExperience(): Int {
 private fun StatItem(
     value: String,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fontScale: Float,
+    isMobile: Boolean
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            if (isMobile) 8.dp else 24.dp
+        ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
         Box(
             modifier = Modifier
                 .width(1.dp)
-                .heightIn(min = 140.dp)
-                .background(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+                .heightIn(
+                    min = if (isMobile) 100.dp else 140.dp
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+                )
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(
+                if (isMobile) 6.dp else 8.dp
+            )
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(
+                    if (isMobile) 8.dp else 12.dp
+                ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "+",
                     style = MaterialTheme.typography.displaySmall.copy(
-                        fontSize = 56.sp,
+                        fontSize = (56 * fontScale).sp,
                         fontWeight = FontWeight.Bold
                     ),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
                 )
 
-                var animatedTarget by rememberSaveable { mutableStateOf(0) }
-                LaunchedEffect(value) { animatedTarget = value.toIntOrNull() ?: 0 }
+                val targetValue = value.toIntOrNull() ?: 0
+                var animatedTarget by remember(value) { mutableStateOf(0) }
+
+                LaunchedEffect(targetValue) {
+                    if (animatedTarget != targetValue) {
+                        animatedTarget = targetValue
+                    }
+                }
+                
                 val animatedValue by animateIntAsState(
                     targetValue = animatedTarget,
                     animationSpec = tween(durationMillis = 1000)
@@ -201,7 +311,7 @@ private fun StatItem(
                 Text(
                     text = animatedValue.toString(),
                     style = MaterialTheme.typography.displayLarge.copy(
-                        fontSize = 96.sp,
+                        fontSize = (96 * fontScale).sp,
                         fontWeight = FontWeight.ExtraBold
                     ),
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
@@ -211,7 +321,7 @@ private fun StatItem(
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 16.sp,
+                    fontSize = (16 * fontScale).sp,
                     fontWeight = FontWeight.Medium
                 ),
                 color = MaterialTheme.colorScheme.onBackground

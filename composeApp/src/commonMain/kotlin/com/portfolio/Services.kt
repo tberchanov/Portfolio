@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +32,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
@@ -39,7 +42,6 @@ import portfolio.composeapp.generated.resources.diagram
 import portfolio.composeapp.generated.resources.group
 import portfolio.composeapp.generated.resources.research_and_development
 
-private const val CONTENT_WIDTH_DP = 900
 private const val SECTION_TITLE_FONT_SIZE_SP = 36
 private const val CARD_TITLE_FONT_SIZE_SP = 20
 private const val CARD_DESCRIPTION_FONT_SIZE_SP = 16
@@ -60,56 +62,103 @@ private const val ANIMATION_DURATION_MS = 200
 fun Services(
     modifier: Modifier = Modifier
 ) {
+    val isMobileScreen = isMobile()
+    val isTabletScreen = isTablet()
+    val contentWidth = getResponsiveContentWidth()
+    val horizontalPadding = getResponsiveHorizontalPadding()
+    val verticalPadding = getResponsiveVerticalPadding()
+    val fontScale = getResponsiveFontScale()
+    
     Column(
         modifier = modifier
-            .width(CONTENT_WIDTH_DP.dp)
-            .padding(horizontal = 32.dp, vertical = 64.dp)
+            .then(
+                if (isMobileScreen) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier.widthIn(max = contentWidth).fillMaxWidth()
+                }
+            )
+            .padding(
+                horizontal = horizontalPadding,
+                vertical = verticalPadding
+            )
     ) {
         Text(
             text = "Services",
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = SECTION_TITLE_FONT_SIZE_SP.sp,
+                fontSize = (SECTION_TITLE_FONT_SIZE_SP * fontScale).sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(
+                bottom = if (isMobileScreen) 24.dp else 32.dp
+            )
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(SECTION_SPACING_DP.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
+        if (isMobileScreen) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ExperienceCard(
                     title = "Mobile Architecture",
                     description = "Designing and implementing scalable mobile solutions. Actively involved in presales activities and project discovery phases to align technical solutions with business goals.",
-                    iconPainter = painterResource(Res.drawable.diagram),
-                    modifier = Modifier.weight(1f)
+                    iconPainter = painterResource(Res.drawable.diagram)
                 )
                 ExperienceCard(
                     title = "Cross-Platform Development",
                     description = "Building cross-platform solutions that deliver native-like experiences across iOS and Android platforms using Kotlin Multiplatform, Flutter and React Native.",
-                    iconPainter = painterResource(Res.drawable.cross_platform),
-                    modifier = Modifier.weight(1f)
+                    iconPainter = painterResource(Res.drawable.cross_platform)
                 )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
-            ) {
                 ExperienceCard(
                     title = "Team Leadership",
                     description = "Leading development teams, establishing best practices, planning and organizing work and mentoring developers to ensure consistent, predictable delivery.",
-                    iconPainter = painterResource(Res.drawable.group),
-                    modifier = Modifier.weight(1f)
+                    iconPainter = painterResource(Res.drawable.group)
                 )
                 ExperienceCard(
                     title = "R&D",
                     description = "Research and development of advanced mobile functionality, including video editing, cryptography and SDK development. Exploring cross-domain innovations across AOSP, robotics with ArduPilot, computer vision and machine learning.",
-                    iconPainter = painterResource(Res.drawable.research_and_development),
-                    modifier = Modifier.weight(1f)
+                    iconPainter = painterResource(Res.drawable.research_and_development)
                 )
+            }
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    if (isTabletScreen) 20.dp else SECTION_SPACING_DP.dp
+                )
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
+                ) {
+                    ExperienceCard(
+                        title = "Mobile Architecture",
+                        description = "Designing and implementing scalable mobile solutions. Actively involved in presales activities and project discovery phases to align technical solutions with business goals.",
+                        iconPainter = painterResource(Res.drawable.diagram),
+                        modifier = Modifier.weight(1f)
+                    )
+                    ExperienceCard(
+                        title = "Cross-Platform Development",
+                        description = "Building cross-platform solutions that deliver native-like experiences across iOS and Android platforms using Kotlin Multiplatform, Flutter and React Native.",
+                        iconPainter = painterResource(Res.drawable.cross_platform),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(ROW_SPACING_DP.dp)
+                ) {
+                    ExperienceCard(
+                        title = "Team Leadership",
+                        description = "Leading development teams, establishing best practices, planning and organizing work and mentoring developers to ensure consistent, predictable delivery.",
+                        iconPainter = painterResource(Res.drawable.group),
+                        modifier = Modifier.weight(1f)
+                    )
+                    ExperienceCard(
+                        title = "R&D",
+                        description = "Research and development of advanced mobile functionality, including video editing, cryptography and SDK development. Exploring cross-domain innovations across AOSP, robotics with ArduPilot, computer vision and machine learning.",
+                        iconPainter = painterResource(Res.drawable.research_and_development),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
@@ -122,36 +171,50 @@ private fun ExperienceCard(
     iconPainter: Painter,
     modifier: Modifier = Modifier
 ) {
+    val isMobileScreen = isMobile()
+    val fontScale = getResponsiveFontScale()
+    
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    
+
     val animatedScale by animateFloatAsState(
-        targetValue = if (isHovered) HOVER_SCALE_FACTOR else 1f,
+        targetValue = if (!isMobileScreen && isHovered) HOVER_SCALE_FACTOR else 1f,
         animationSpec = tween(ANIMATION_DURATION_MS),
         label = "cardScale"
     )
     
     val animatedElevation by animateDpAsState(
-        targetValue = if (isHovered) HOVER_ELEVATION_DP.dp else 0.dp,
+        targetValue = if (!isMobileScreen && isHovered) HOVER_ELEVATION_DP.dp else 0.dp,
         animationSpec = tween(ANIMATION_DURATION_MS),
         label = "cardElevation"
     )
     
     val animatedIconScale by animateFloatAsState(
-        targetValue = if (isHovered) 1.1f else 1f,
+        targetValue = if (!isMobileScreen && isHovered) 1.1f else 1f,
         animationSpec = tween(ANIMATION_DURATION_MS),
         label = "iconScale"
     )
     
     val animatedBorderAlpha by animateFloatAsState(
-        targetValue = if (isHovered) 0.6f else BORDER_ALPHA,
+        targetValue = if (!isMobileScreen && isHovered) 0.6f else BORDER_ALPHA,
         animationSpec = tween(ANIMATION_DURATION_MS),
         label = "borderAlpha"
     )
     
+    val iconCircleSize = (ICON_CIRCLE_SIZE_DP * fontScale).dp
+    val iconSize = (ICON_SIZE_DP * fontScale).dp
+    val iconRightPadding = if (isMobileScreen) 10.dp else ICON_RIGHT_PADDING_DP.dp
+    val cardPadding = if (isMobileScreen) 16.dp else if (isTablet()) 20.dp else CARD_PADDING_DP.dp
+    
     Row(
         modifier = modifier
-            .hoverable(interactionSource)
+            .then(
+                if (!isMobileScreen) {
+                    Modifier.hoverable(interactionSource)
+                } else {
+                    Modifier
+                }
+            )
             .scale(animatedScale)
             .background(
                 color = MaterialTheme.colorScheme.surface,
@@ -162,11 +225,18 @@ private fun ExperienceCard(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = animatedBorderAlpha),
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(CARD_PADDING_DP.dp)
+            .padding(cardPadding)
+            .then(
+                if (isMobileScreen) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Box(
             modifier = Modifier
-                .size(ICON_CIRCLE_SIZE_DP.dp)
+                .size(iconCircleSize)
                 .background(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     shape = CircleShape
@@ -183,31 +253,44 @@ private fun ExperienceCard(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                 modifier = Modifier
-                    .size(ICON_SIZE_DP.dp)
+                    .size(iconSize)
                     .scale(animatedIconScale)
             )
         }
 
-        Spacer(Modifier.width(ICON_RIGHT_PADDING_DP.dp))
+        Spacer(Modifier.width(iconRightPadding))
 
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = CARD_TITLE_FONT_SIZE_SP.sp,
+                    fontSize = (CARD_TITLE_FONT_SIZE_SP * fontScale).sp,
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(top = 6.dp, bottom = CARD_SPACING_DP.dp)
+                lineHeight = if (isMobileScreen) 20.sp else 24.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = if (isMobileScreen) 4.dp else 6.dp,
+                        bottom = if (isMobileScreen) 8.dp else CARD_SPACING_DP.dp
+                    ),
+                softWrap = true,
+                overflow = TextOverflow.Visible
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = CARD_DESCRIPTION_FONT_SIZE_SP.sp
+                    fontSize = (CARD_DESCRIPTION_FONT_SIZE_SP * fontScale).sp
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
-                lineHeight = 24.sp
+                lineHeight = if (isMobileScreen) 18.sp else 24.sp,
+                modifier = Modifier.fillMaxWidth(),
+                softWrap = true,
+                overflow = TextOverflow.Visible
             )
         }
     }

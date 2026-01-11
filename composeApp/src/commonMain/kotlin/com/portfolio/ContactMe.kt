@@ -28,12 +28,13 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.random.Random
 import org.jetbrains.compose.resources.painterResource
 import portfolio.composeapp.generated.resources.Res
 import portfolio.composeapp.generated.resources.linkedin
-import kotlin.random.Random
 
 private const val SECTION_TITLE_FONT_SIZE_SP = 36
 private const val CARD_DESC_FONT_SIZE_SP = 18
@@ -57,7 +58,10 @@ fun ContactMe(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 124.dp),
+                .padding(
+                    horizontal = getResponsiveHorizontalPadding(),
+                    vertical = 124.dp
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -66,16 +70,19 @@ fun ContactMe(
                     fontSize = SECTION_TITLE_FONT_SIZE_SP.sp,
                     fontWeight = FontWeight.Bold
                 ),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "I’d be happy to discuss projects, creative ideas or opportunities to collaborate.",
+                text = "I'd be happy to discuss projects, creative ideas or opportunities to collaborate.",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = CARD_DESC_FONT_SIZE_SP.sp),
                 color = MaterialTheme.colorScheme.onBackground,
-                lineHeight = 26.sp
+                lineHeight = 26.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(32.dp))
