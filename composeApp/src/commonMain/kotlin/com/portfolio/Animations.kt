@@ -15,42 +15,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 
-private const val INITIAL_ANIMATION_DURATION = 1500
-private const val REGULAR_ANIMATION_DURATION = 300
+private const val ENTRY_DURATION_MS = 1500
+private val EntryOffset = 12.dp
 
+/** Fades and lifts [content] into place once, the first time it is composed. */
 @Composable
 fun AnimatedSection(
-    block: @Composable () -> Unit
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
 ) {
-    var isVisible by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        isVisible = true
-    }
-
-    val animationDuration = if (isVisible) {
-        INITIAL_ANIMATION_DURATION
-    } else {
-        REGULAR_ANIMATION_DURATION
+        visible = true
     }
 
     val alpha by animateFloatAsState(
-        targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = animationDuration)
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(ENTRY_DURATION_MS),
+        label = "sectionAlpha"
     )
 
     val offsetY by animateDpAsState(
-        targetValue = if (isVisible) 0.dp else 12.dp,
-        animationSpec = tween(durationMillis = animationDuration)
+        targetValue = if (visible) 0.dp else EntryOffset,
+        animationSpec = tween(ENTRY_DURATION_MS),
+        label = "sectionOffset"
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .alpha(alpha)
             .offset(y = offsetY)
     ) {
-        block()
+        content()
     }
 }
-
-

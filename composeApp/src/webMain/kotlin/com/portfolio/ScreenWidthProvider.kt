@@ -1,39 +1,30 @@
 package com.portfolio
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import kotlinx.browser.window
-import kotlinx.coroutines.delay
-
-// Constants for screen width polling
-private const val POLLING_INTERVAL_MS = 200L
 
 /**
- * Provides the current screen width in dp units.
- * Uses polling to detect window resize events for WASM compatibility.
+ * Tracks `window.innerWidth`, subscribing to the browser's own resize event
+ * rather than polling for it.
+ *
+ * The handler is installed through `window.onresize` because `addEventListener`
+ * takes an `EventListener` on Kotlin/JS and a plain function on Kotlin/Wasm —
+ * this source set has to compile for both.
  */
 @Composable
-actual fun getScreenWidthDp(): Int {
-    val density = LocalDensity.current
-    var windowWidth by remember { mutableStateOf(window.innerWidth) }
-    
-    // Poll for window size changes every 200ms
-    // This approach is WASM-compatible and efficient
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(POLLING_INTERVAL_MS)
-            val newWidth = window.innerWidth
-            if (newWidth != windowWidth) {
-                windowWidth = newWidth
-            }
-        }
+actual fun rememberScreenWidthDp(): Int {
+    var widthPx by remember { mutableStateOf(window.innerWidth) }
+
+    DisposableEffect(Unit) {
+        window.onresize = { widthPx = window.innerWidth }
+        onDispose { window.onresize = null }
     }
-    
-    // Convert pixels to dp using the current density
-    return with(density) { windowWidth.toDp().value.toInt() }
+
+    return with(LocalDensity.current) { widthPx.toDp().value.toInt() }
 }

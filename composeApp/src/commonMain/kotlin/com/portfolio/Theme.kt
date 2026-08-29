@@ -4,31 +4,44 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
-val DeepCharcoal = Color(0xFF1D2024)
-val TextOffWhite = Color(0xFFF5F5F5)
-val ElectricCyan = Color(0xFF00FFFF)
-val MutedTeal = Color(0xFF4A9090)
+/** Palette of the spec-sheet redesign. */
+val SheetBlack = Color(0xFF0B0C0D)
+val PageBlack = Color(0xFF0E0F11)
+val BoneWhite = Color(0xFFE8EAE6)
+val AshGrey = Color(0xFF787D7A)
+val SmokeGrey = Color(0xFFA6ABA3)
+val AcidLime = Color(0xFFC6F24E)
 
-private val DeepTechDarkColors: ColorScheme = darkColorScheme(
-    primary = ElectricCyan,
-    onPrimary = DeepCharcoal,
-    secondary = MutedTeal,
-    onSecondary = DeepCharcoal,
-    background = DeepCharcoal,
-    onBackground = TextOffWhite,
-    surface = Color(0xFF22262B),
-    onSurface = TextOffWhite,
-    surfaceVariant = Color(0xFF292E34),
-    onSurfaceVariant = TextOffWhite.copy(alpha = 0.8f),
-    outline = MutedTeal.copy(alpha = 0.6f)
+val Hairline = BoneWhite.copy(alpha = 0.10f)
+val HairlineStrong = BoneWhite.copy(alpha = 0.20f)
+
+private val SpecSheetColors: ColorScheme = darkColorScheme(
+    primary = AcidLime,
+    onPrimary = SheetBlack,
+    secondary = SmokeGrey,
+    onSecondary = SheetBlack,
+    background = SheetBlack,
+    onBackground = BoneWhite,
+    surface = SheetBlack,
+    onSurface = BoneWhite,
+    surfaceVariant = PageBlack,
+    onSurfaceVariant = AshGrey,
+    outline = Hairline
 )
 
 @Composable
-fun DeepTechTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = DeepTechDarkColors,
-        content = content
-    )
+fun PortfolioTheme(content: @Composable () -> Unit) {
+    val screenSize = rememberScreenSize()
+    MaterialTheme(colorScheme = SpecSheetColors) {
+        CompositionLocalProvider(
+            LocalScreenSize provides screenSize,
+            LocalMetrics provides metricsFor(screenSize),
+            LocalDisplayFamily provides manropeFamily(),
+            LocalMonoFamily provides plexMonoFamily(),
+            content = content
+        )
+    }
 }

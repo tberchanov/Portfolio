@@ -3,13 +3,13 @@ package com.portfolio
 import androidx.compose.runtime.Composable
 
 /**
- * Provides the current screen width in dp units across all platforms.
- * 
- * This function uses platform-specific implementations to get the screen width:
- * - Web (WASM): Uses window.innerWidth with polling for resize events
- * - Android/iOS/Desktop: Uses LocalConfiguration.current.screenWidthDp
- * 
- * @return The current screen width in dp units
+ * The width of the window the app is drawn into, in dp, kept up to date as that
+ * window is resized.
+ *
+ * Android, iOS and desktop read it from the Compose window; the browser targets
+ * read it from `window.innerWidth`, which needs its own resize subscription.
+ *
+ * Call this once per composition — prefer [LocalScreenSize] elsewhere.
  */
 @Composable
-expect fun getScreenWidthDp(): Int
+expect fun rememberScreenWidthDp(): Int

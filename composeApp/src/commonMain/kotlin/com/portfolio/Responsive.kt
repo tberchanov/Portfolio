@@ -1,219 +1,130 @@
 package com.portfolio
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-/**
- * Breakpoints for responsive design
- */
-object Breakpoints {
-    const val MOBILE_MAX_DP = 600
-    const val TABLET_MAX_DP = 900
-    const val DESKTOP_MIN_DP = 901
-}
+/** Width in dp at which the sheet stops growing. Matches the canvas artboard. */
+val SheetMaxWidth: Dp = 1100.dp
 
-/**
- * Screen size categories
- */
+private const val MOBILE_MAX_DP = 600
+private const val TABLET_MAX_DP = 900
+
 enum class ScreenSize {
-    Mobile,    // 0-600dp
-    Tablet,    // 601-900dp
-    Desktop    // 901+ dp
+    Mobile,
+    Tablet,
+    Desktop;
+
+    val isMobile: Boolean get() = this == Mobile
 }
 
 /**
- * Determines the current screen size category based on width.
- * 
- * Breakpoints:
- * - Mobile: 0-600dp (inclusive)
- * - Tablet: 601-900dp (inclusive)
- * - Desktop: 901+ dp (inclusive)
- * 
- * @return The current screen size category
+ * The current breakpoint. Resolved once, in [PortfolioTheme], and handed to the
+ * tree through [LocalScreenSize] — the platform width lookup it builds on is not
+ * free (on the web it observes window resizes), so the sheet reads it only here.
  */
 @Composable
-fun getScreenSize(): ScreenSize {
-    val widthDp = getScreenWidthDp()
+fun rememberScreenSize(): ScreenSize {
+    val widthDp = rememberScreenWidthDp()
     return when {
-        widthDp <= Breakpoints.MOBILE_MAX_DP -> ScreenSize.Mobile
-        widthDp <= Breakpoints.TABLET_MAX_DP -> ScreenSize.Tablet
+        widthDp <= MOBILE_MAX_DP -> ScreenSize.Mobile
+        widthDp <= TABLET_MAX_DP -> ScreenSize.Tablet
         else -> ScreenSize.Desktop
     }
 }
 
 /**
- * Returns responsive content width with proper padding.
- * 
- * - Mobile: Full width minus padding (16dp per side = 32dp total)
- * - Tablet: 90% of screen width
- * - Desktop: Fixed 900dp max width
- * 
- * @return The maximum content width in dp
+ * Every dimension the sheet uses, resolved once per breakpoint.
+ *
+ * The desktop column is the canvas 1:1; tablet and mobile keep the same
+ * proportions with the type and the generous vertical rhythm scaled down.
  */
-@Composable
-fun getResponsiveContentWidth(): Dp {
-    val screenSize = getScreenSize()
-    val screenWidthDp = getScreenWidthDp()
-    
-    return when (screenSize) {
-        ScreenSize.Mobile -> {
-            // On mobile, use full width minus padding (16dp per side)
-            (screenWidthDp - 32).dp
-        }
-        ScreenSize.Tablet -> {
-            // On tablet, use 90% of width
-            (screenWidthDp * 0.9f).dp
-        }
-        ScreenSize.Desktop -> {
-            // On desktop, use fixed max width
-            900.dp
-        }
-    }
+@Immutable
+data class Metrics(
+    val sheetPadding: Dp,
+    val heroTopPadding: Dp,
+    val blockGap: Dp,
+    val labelGap: Dp,
+    val rowPadding: Dp,
+    val indexColumn: Dp,
+    val columnGap: Dp,
+    val avatar: Dp,
+    val display: TextUnit,
+    val rowTitle: TextUnit,
+    val workTitle: TextUnit,
+    val contact: TextUnit,
+    val body: TextUnit,
+    val caption: TextUnit,
+    val label: TextUnit,
+    val micro: TextUnit
+)
+
+private val DesktopMetrics = Metrics(
+    sheetPadding = 112.dp,
+    heroTopPadding = 200.dp,
+    blockGap = 180.dp,
+    labelGap = 44.dp,
+    rowPadding = 30.dp,
+    indexColumn = 56.dp,
+    columnGap = 32.dp,
+    avatar = 88.dp,
+    display = 88.sp,
+    rowTitle = 38.sp,
+    workTitle = 30.sp,
+    contact = 26.sp,
+    body = 17.sp,
+    caption = 13.sp,
+    label = 12.sp,
+    micro = 11.sp
+)
+
+private val TabletMetrics = Metrics(
+    sheetPadding = 56.dp,
+    heroTopPadding = 140.dp,
+    blockGap = 120.dp,
+    labelGap = 36.dp,
+    rowPadding = 26.dp,
+    indexColumn = 44.dp,
+    columnGap = 24.dp,
+    avatar = 76.dp,
+    display = 64.sp,
+    rowTitle = 30.sp,
+    workTitle = 26.sp,
+    contact = 22.sp,
+    body = 16.sp,
+    caption = 12.sp,
+    label = 11.sp,
+    micro = 11.sp
+)
+
+private val MobileMetrics = Metrics(
+    sheetPadding = 24.dp,
+    heroTopPadding = 96.dp,
+    blockGap = 80.dp,
+    labelGap = 28.dp,
+    rowPadding = 22.dp,
+    indexColumn = 32.dp,
+    columnGap = 16.dp,
+    avatar = 64.dp,
+    display = 42.sp,
+    rowTitle = 24.sp,
+    workTitle = 21.sp,
+    contact = 19.sp,
+    body = 15.sp,
+    caption = 11.sp,
+    label = 11.sp,
+    micro = 10.sp
+)
+
+fun metricsFor(screenSize: ScreenSize): Metrics = when (screenSize) {
+    ScreenSize.Mobile -> MobileMetrics
+    ScreenSize.Tablet -> TabletMetrics
+    ScreenSize.Desktop -> DesktopMetrics
 }
 
-/**
- * Returns responsive horizontal padding based on screen size.
- * 
- * - Mobile: 16dp
- * - Tablet: 24dp
- * - Desktop: 32dp
- * 
- * @return The horizontal padding in dp
- */
-@Composable
-fun getResponsiveHorizontalPadding(): Dp {
-    val screenSize = getScreenSize()
-    return when (screenSize) {
-        ScreenSize.Mobile -> 16.dp
-        ScreenSize.Tablet -> 24.dp
-        ScreenSize.Desktop -> 32.dp
-    }
-}
-
-/**
- * Returns responsive vertical padding based on screen size.
- * 
- * - Mobile: 32dp
- * - Tablet: 48dp
- * - Desktop: 64dp
- * 
- * @return The vertical padding in dp
- */
-@Composable
-fun getResponsiveVerticalPadding(): Dp {
-    val screenSize = getScreenSize()
-    return when (screenSize) {
-        ScreenSize.Mobile -> 32.dp
-        ScreenSize.Tablet -> 48.dp
-        ScreenSize.Desktop -> 64.dp
-    }
-}
-
-/**
- * Returns responsive font scale multiplier based on screen size.
- * 
- * - Mobile: 0.75 (25% smaller)
- * - Tablet: 0.875 (12.5% smaller)
- * - Desktop: 1.0 (full size)
- * 
- * @return The font scale multiplier (Float)
- */
-@Composable
-fun getResponsiveFontScale(): Float {
-    val screenSize = getScreenSize()
-    return when (screenSize) {
-        ScreenSize.Mobile -> 0.75f
-        ScreenSize.Tablet -> 0.875f
-        ScreenSize.Desktop -> 1.0f
-    }
-}
-
-/**
- * Returns responsive icon size based on screen size.
- * Provides better touch targets on mobile devices.
- * 
- * - Mobile: 22dp (better touch targets)
- * - Tablet: 23dp
- * - Desktop: 24dp
- * 
- * @return The icon size in dp
- */
-@Composable
-fun getResponsiveIconSize(): Dp {
-    val screenSize = getScreenSize()
-    return when (screenSize) {
-        ScreenSize.Mobile -> 22.dp
-        ScreenSize.Tablet -> 23.dp
-        ScreenSize.Desktop -> 24.dp
-    }
-}
-
-/**
- * Returns responsive portrait/image size for AboutMe section.
- * 
- * - Mobile: 150dp
- * - Tablet: 200dp
- * - Desktop: 250dp
- * 
- * @return The portrait size in dp
- */
-@Composable
-fun getResponsivePortraitSize(): Dp {
-    val screenSize = getScreenSize()
-    return when (screenSize) {
-        ScreenSize.Mobile -> 150.dp
-        ScreenSize.Tablet -> 200.dp
-        ScreenSize.Desktop -> 250.dp
-    }
-}
-
-/**
- * Returns responsive section title font size.
- * Convenience function for the standard 36sp section title.
- * 
- * - Mobile: 27sp (36 * 0.75)
- * - Tablet: 31.5sp (36 * 0.875)
- * - Desktop: 36sp (full size)
- * 
- * @return The section title font size in sp (as Float)
- */
-@Composable
-fun getResponsiveSectionTitleSize(): Float {
-    val baseSize = 36f
-    return baseSize * getResponsiveFontScale()
-}
-
-/**
- * Helper function to check if current screen size is Mobile.
- * Makes conditionals cleaner: `if (isMobile()) Column else Row`
- * 
- * @return true if screen size is Mobile
- */
-@Composable
-fun isMobile(): Boolean {
-    return getScreenSize() == ScreenSize.Mobile
-}
-
-/**
- * Helper function to check if current screen size is Tablet.
- * Makes conditionals cleaner: `if (isTablet()) ...`
- * 
- * @return true if screen size is Tablet
- */
-@Composable
-fun isTablet(): Boolean {
-    return getScreenSize() == ScreenSize.Tablet
-}
-
-/**
- * Helper function to check if current screen size is Desktop.
- * Makes conditionals cleaner: `if (isDesktop()) ...`
- * 
- * @return true if screen size is Desktop
- */
-@Composable
-fun isDesktop(): Boolean {
-    return getScreenSize() == ScreenSize.Desktop
-}
-
+val LocalScreenSize = staticCompositionLocalOf { ScreenSize.Desktop }
+val LocalMetrics = staticCompositionLocalOf { DesktopMetrics }

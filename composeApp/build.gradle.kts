@@ -40,6 +40,18 @@ kotlin {
         binaries.executable()
     }
     
+    applyDefaultHierarchyTemplate {
+        common {
+            // Android, iOS and desktop share one Compose-window implementation of
+            // the platform APIs the web targets have to provide differently.
+            group("nonWeb") {
+                withAndroidTarget()
+                withJvm()
+                withIos()
+            }
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
